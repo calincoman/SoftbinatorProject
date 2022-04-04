@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/products")
 public class ProductController {
@@ -26,8 +28,9 @@ public class ProductController {
         return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<?> addProduct(@RequestBody Product product) {
+    @PostMapping("/add/{id}")
+    public ResponseEntity<?> addProduct(@Valid @RequestBody Product product, @PathVariable Long id) {
+        product.setUserId(id);
         return new ResponseEntity<>(productService.addProduct(product), HttpStatus.OK);
     }
 

@@ -1,6 +1,7 @@
 package com.example.softbinatorproject.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class IdentityCard {
     private String number;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "identityCard")
+    @JsonIgnoreProperties("identityCard")
     private User user;
 
 }
