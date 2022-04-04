@@ -39,14 +39,19 @@ class KeycloakConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
 
-//        http.cors().and().csrf().disable()
-//                .authorizeRequests()
-//                .antMatchers("/api/v1/users/register-user", "/api/v1/login", "/api/v1/refresh")
-//                    .permitAll()
-//                .antMatchers("/api/v1/products")
-//                    .hasAnyRole("ROLE_USER", "ROLE_ADMIN").anyRequest().permitAll();
-
-       http.cors().and().csrf().disable().authorizeRequests().anyRequest().permitAll();
+        http.cors().and().csrf().disable()
+                .authorizeRequests()
+                .antMatchers(
+                        "/api/v1/users/register-user",
+                        "/api/v1/stores/register-store",
+                        "/api/v1/login-user",
+                        "/api/v1/login-store",
+                        "/api/v1/refresh"
+                ).permitAll()
+                .antMatchers("/api/v1/**").hasRole("ADMIN")
+                .antMatchers("/api/v1/products").hasRole("USER")
+                .antMatchers("/api/v1/bundles").hasRole("STORE")
+                .anyRequest().permitAll();
     }
 }
 

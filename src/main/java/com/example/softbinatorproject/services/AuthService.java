@@ -4,7 +4,9 @@ import com.example.softbinatorproject.clients.AuthClient;
 import com.example.softbinatorproject.dtos.LoginDto;
 import com.example.softbinatorproject.dtos.RefreshTokenDto;
 import com.example.softbinatorproject.dtos.TokenDto;
+import com.example.softbinatorproject.models.Store;
 import com.example.softbinatorproject.models.User;
+import com.example.softbinatorproject.repositories.StoreRepository;
 import com.example.softbinatorproject.repositories.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,31 +25,43 @@ public class AuthService {
 
     private final AuthClient authClient;
     private final UserRepository userRepository;
+    private final StoreRepository storeRepository;
 
     @Value("${keycloak.resource}")
     private String keycloakClient;
 
     @Autowired
-    public AuthService(AuthClient authClient, UserRepository userRepository) {
+    public AuthService(AuthClient authClient, UserRepository userRepository, StoreRepository storeRepository) {
         this.authClient = authClient;
         this.userRepository = userRepository;
+        this.storeRepository = storeRepository;
     }
 
-    @SneakyThrows
-    public TokenDto login(LoginDto loginDto) {
 
-        User databaseUser = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
+    @SneakyThrows
+    public TokenDto login(LoginDto loginDto, String role) {
+
+        String keycloakUsername = "";
+        if (role.equals("USER") || role.equals("ADMIN")) {
+            User databaseUser = userRepository.findByEmail(loginDto.getEmail())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
+            keycloakUsername = databaseUser.getId().toString();
+        } else if (role.equals("STORE")) {
+            Store databaseStore = storeRepository.findByEmail(loginDto.getEmail())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Store does not exist"));
+            keycloakUsername = databaseStore.getId().toString();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found");
+        }
 
         MultiValueMap<String, String> loginCredentials = new LinkedMultiValueMap<>();
         loginCredentials.add("client_id", keycloakClient);
-        loginCredentials.add("username", databaseUser.getId().toString());
+        loginCredentials.add("username", keycloakUsername);
         loginCredentials.add("password", loginDto.getPassword());
         loginCredentials.add("grant_type", loginDto.getGrantType());
 
         TokenDto token = authClient.login(loginCredentials);
         return token;
-
     }
 
     @SneakyThrows

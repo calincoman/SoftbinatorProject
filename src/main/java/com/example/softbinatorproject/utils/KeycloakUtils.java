@@ -1,14 +1,22 @@
 package com.example.softbinatorproject.utils;
 
-import com.example.softbinatorproject.dtos.UserInfoDto;
+import com.example.softbinatorproject.models.User;
+import com.example.softbinatorproject.repositories.UserRepository;
+import lombok.NoArgsConstructor;
 import org.keycloak.KeycloakPrincipal;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.server.ResponseStatusException;
 
-public class KeycloakHelper {
+
+public class KeycloakUtils {
 
     public static String getUser(Authentication authentication) {
-        return ((KeycloakPrincipal) authentication.getPrincipal()).getKeycloakSecurityContext()
+        String keycloakUserId = ((KeycloakPrincipal) authentication.getPrincipal()).getKeycloakSecurityContext()
                 .getToken().getPreferredUsername();
+
+        return keycloakUserId;
     }
 
     public static String getLoggedInUser(Authentication authentication) {

@@ -22,9 +22,19 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
-        return new ResponseEntity<>(authService.login(loginDto), HttpStatus.OK);
+    @PostMapping("/login-user")
+    public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
+        return new ResponseEntity<>(authService.login(loginDto, "USER"), HttpStatus.OK);
+    }
+
+    @PostMapping("/login-store")
+    public ResponseEntity<?> loginStore(@RequestBody LoginDto loginDto) {
+        return new ResponseEntity<>(authService.login(loginDto, "STORE"), HttpStatus.OK);
+    }
+
+    @PostMapping("/login-admin")
+    public ResponseEntity<?> loginAdmin(@RequestBody LoginDto loginDto) {
+        return new ResponseEntity<>(authService.login(loginDto, "ADMIN"), HttpStatus.OK);
     }
 
     @PostMapping("/refresh")

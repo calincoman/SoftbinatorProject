@@ -60,7 +60,7 @@ public class KeycloakAdminService {
         this.realm = this.keycloak.realm(keycloakRealm);
     }
 
-    public TokenDto addUserToKeycloak(Long userId, String password) {
+    public TokenDto addUserToKeycloak(Long userId, String password, String role) {
 
         UserRepresentation keycloakUser = new UserRepresentation();
         keycloakUser.setEnabled(true);
@@ -79,7 +79,7 @@ public class KeycloakAdminService {
         System.out.println("User has been saved with an id: " + keycloakUserId);
 
         UserResource userResource = realm.users().get(keycloakUserId);
-        RoleRepresentation roleRepresentation = realm.roles().get("ROLE_USER").toRepresentation();
+        RoleRepresentation roleRepresentation = realm.roles().get(role).toRepresentation();
         userResource.roles().realmLevel().add(Collections.singletonList(roleRepresentation));
 
         MultiValueMap<String, String> loginCredentials = new LinkedMultiValueMap<>();

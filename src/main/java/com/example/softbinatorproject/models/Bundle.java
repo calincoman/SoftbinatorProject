@@ -8,6 +8,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,16 +24,26 @@ public class Bundle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
     private String name;
 
     private String description;
 
+    @NotEmpty
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "bundle")
     @JsonIgnoreProperties("bundle")
     private List<Product> products;
 
+    private Long storeId;
+
     public boolean hasExpired() {
         return products.stream()
                 .anyMatch(Product::isExpired);
+    }
+
+    public Double getPrice() {
+        double totalPrice = products.stream().mapToDouble(Product::getPrice).sum();
+        double discount = (!this.hasExpired() ? 0.2 : 0.5);
+        return totalPrice * (1 - discount);
     }
 }

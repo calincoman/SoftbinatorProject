@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/bundles")
 public class BundleController {
@@ -25,8 +27,9 @@ public class BundleController {
         return new ResponseEntity<>(bundleService.getBundles(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<?> addBundle(@RequestBody Bundle bundle) {
+    @PostMapping("/add/{id}")
+    public ResponseEntity<?> addBundle(@Valid @RequestBody Bundle bundle, @PathVariable Long id) {
+        bundle.setStoreId(id);
         return new ResponseEntity<>(bundleService.addBundle(bundle), HttpStatus.OK);
     }
 
